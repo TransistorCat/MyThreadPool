@@ -20,6 +20,8 @@ SimplePool::SimplePool(size_t numThreads, std::unique_ptr<ITaskQueue> taskQueue)
         std::function<void()> task = this->taskQueue->pop();
         if (task)
           task();
+        else
+          break;
       }
     });
   }
