@@ -1,1 +1,5 @@
 build
+.vscode
+.cache
+.cache/clangd/index/main.cpp.CD54921229094030.idx
+.cache/clangd/index/main.cpp.CD54921229094030.idx

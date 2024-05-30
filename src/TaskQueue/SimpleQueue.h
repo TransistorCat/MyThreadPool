@@ -1,14 +1,15 @@
-#include "../ITaskQueue.h"
+#include "ITaskQueue.h"
 #include <condition_variable>
 #include <mutex>
 #include <queue>
 
 class SimpleQueue : public ITaskQueue {
 public:
+  SimpleQueue();
   void push(const std::function<void()> &task);
   std::function<void()> pop();
-  bool empty() const;
-  size_t size() const;
+  bool empty();
+  size_t size();
   void stop();
   ~SimpleQueue();
 

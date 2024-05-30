@@ -4,6 +4,7 @@
 #include <functional>
 #include <mutex>
 
+SimpleQueue::SimpleQueue() {}
 void SimpleQueue::push(const std::function<void()> &task) {
   {
     std::scoped_lock lock(mutex);
@@ -15,18 +16,20 @@ void SimpleQueue::push(const std::function<void()> &task) {
 
 std::function<void()> SimpleQueue::pop() {
   std::unique_lock lock(mutex);
-  condition.wait(lock, [this] { return !tasks.empty() || !is_stop; });
+  condition.wait(lock, [this] { return !tasks.empty() || is_stop; });
+  if (tasks.empty()) // 意味着当前stop且没任务了
+    return nullptr;
   auto task = std::move(tasks.front());
   tasks.pop();
   return task;
 }
 
-bool SimpleQueue::empty() const {
+bool SimpleQueue::empty() {
   std::scoped_lock lock(mutex);
   return tasks.empty();
 }
 
-size_t SimpleQueue::size() const {
+size_t SimpleQueue::size() {
   std::scoped_lock lock(mutex);
   return tasks.size();
 }
@@ -42,9 +45,7 @@ SimpleQueue::~SimpleQueue() {
 }
 
 void SimpleQueue::stop() {
-  {
-    std::unique_lock<std::mutex> lock(mutex);
-    is_stop = true;
-  }
+  std::unique_lock<std::mutex> lock(mutex);
+  is_stop = true;
   condition.notify_all();
 }
