@@ -13,7 +13,7 @@ void UnSafeQueue::push(const std::function<void()> &task) {
 
 std::function<void()> UnSafeQueue::pop() {
   std::unique_lock lock(mutex);
-  if (tasks.empty() && is_stop)
+  if (tasks.empty() && is_stop) // 有问题
     return nullptr;
   auto task = std::move(tasks.front());
   tasks.pop();
