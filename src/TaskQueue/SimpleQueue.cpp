@@ -49,3 +49,7 @@ void SimpleQueue::stop() {
   is_stop = true;
   condition.notify_all();
 }
+
+std::unique_ptr<ITaskQueue> SimpleQueue::clone() const {
+  return std::make_unique<SimpleQueue>();
+}

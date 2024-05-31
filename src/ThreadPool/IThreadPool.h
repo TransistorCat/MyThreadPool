@@ -1,3 +1,6 @@
+#ifndef ITHREADPOOL_H
+#define ITHREADPOOL_H
+
 #include <functional>
 #include <future>
 
@@ -10,3 +13,4 @@ public:
   //    auto submit(F &&f, Args &&...args)
   //       -> std::future<typename std::result_of<F(Args...)>::type> ;
 };
+#endif

@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 add_executable(MyThreadPool main.cpp
 src/TaskQueue/SimpleQueue.cpp
 src/ThreadPool/SimplePool.cpp
+src/ThreadPool/MultplePool.cpp
+src/TaskQueue/UnSafeQueue.cpp
 )
 target_link_libraries(MyThreadPool PRIVATE pthread)
 include(CTest)

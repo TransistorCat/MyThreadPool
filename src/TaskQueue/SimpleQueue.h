@@ -12,6 +12,7 @@ public:
   size_t size();
   void stop();
   ~SimpleQueue();
+  std::unique_ptr<ITaskQueue> clone() const;
 
 private:
   std::queue<std::function<void()>> tasks;
