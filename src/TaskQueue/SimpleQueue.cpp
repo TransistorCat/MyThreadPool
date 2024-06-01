@@ -44,6 +44,14 @@ SimpleQueue::~SimpleQueue() {
   }
 }
 
+bool SimpleQueue::running() {
+  std::unique_lock<std::mutex> lock(mutex);
+  if (!is_stop)
+    return true;
+  else
+    return false;
+}
+
 void SimpleQueue::stop() {
   std::unique_lock<std::mutex> lock(mutex);
   is_stop = true;

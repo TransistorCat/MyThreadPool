@@ -2,10 +2,10 @@
 #include "src/TaskQueue/ITaskQueue.h"
 #include "src/TaskQueue/SimpleQueue.h"
 // #include "src/ThreadPool/IThreadPool.h"
-#include "src/TaskQueue/UnSafeQueue.h"
 #include "src/ThreadPool/IThreadPool.h"
 #include "src/ThreadPool/MultplePool.h"
 #include "src/ThreadPool/SimplePool.h"
+#include "src/ThreadPool/ThreadLocalPool.h"
 #include <iostream>
 #include <memory>
 
@@ -31,11 +31,12 @@ void performanceTest(IThreadPool &pool, int numTasks) {
   auto start = std::chrono::high_resolution_clock::now();
 
   for (int i = 0; i < numTasks; ++i) {
-    results.emplace_back(pool.submit([i] {
-      // Simulate task workload
-      std::cout << "Start: " << i << std::endl;
-      std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }));
+    results.emplace_back(pool.submit(
+
+        [i] {
+          // std::cout << "Start: " << i << std::endl;
+          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        }));
   }
 
   for (auto &&result : results) {
@@ -50,12 +51,17 @@ void performanceTest(IThreadPool &pool, int numTasks) {
 
 int main() {
   auto taskQueue1 = std::make_unique<SimpleQueue>();
-  auto taskQueue2 = std::make_unique<UnSafeQueue>();
-  MultplePool multple_pool(10, std::move(taskQueue2->clone()));
-  SimplePool simple_pool(10, std::move(taskQueue1->clone()));
-  int numTasks = 1000;
-  performanceTest(multple_pool, numTasks);
+  // auto taskQueue2 = std::make_unique<UnSafeQueue>();
+  MultplePool multple_pool(1000, std::move(taskQueue1->clone()));
+  SimplePool simple_pool(1000, std::move(taskQueue1->clone()));
+  int numTasks = 500000;
+  ThreadLocalPool threadlocal_pool(1000, std::move(taskQueue1->clone()));
+  std::cout << "V1: ";
   performanceTest(simple_pool, numTasks);
+  std::cout << "V2: ";
+  performanceTest(multple_pool, numTasks);
+  std::cout << "V3: ";
+  performanceTest(threadlocal_pool, numTasks);
 
   return 0;
 }

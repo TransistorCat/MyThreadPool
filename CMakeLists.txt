@@ -6,7 +6,7 @@ add_executable(MyThreadPool main.cpp
 src/TaskQueue/SimpleQueue.cpp
 src/ThreadPool/SimplePool.cpp
 src/ThreadPool/MultplePool.cpp
-src/TaskQueue/UnSafeQueue.cpp
+src/ThreadPool/ThreadLocalPool.cpp
 )
 target_link_libraries(MyThreadPool PRIVATE pthread)
 include(CTest)

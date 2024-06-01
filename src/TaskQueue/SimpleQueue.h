@@ -11,6 +11,7 @@ public:
   bool empty();
   size_t size();
   void stop();
+  bool running();
   ~SimpleQueue();
   std::unique_ptr<ITaskQueue> clone() const;
 
