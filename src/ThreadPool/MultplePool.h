@@ -17,4 +17,5 @@ private:
   std::vector<std::thread> workers;
   std::vector<std::unique_ptr<ITaskQueue>> taskQueues;
   size_t numThreads;
+  size_t nextQueue{0};
 };

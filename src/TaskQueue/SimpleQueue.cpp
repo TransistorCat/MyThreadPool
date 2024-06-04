@@ -36,6 +36,7 @@ size_t SimpleQueue::size() {
 
 SimpleQueue::~SimpleQueue() {
   // 加锁以确保线程安全
+  stop();
   std::unique_lock<std::mutex> lock(mutex);
 
   // 清空任务队列中的所有任务

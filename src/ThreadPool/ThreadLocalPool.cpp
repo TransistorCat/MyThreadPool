@@ -9,8 +9,10 @@
 auto ThreadLocalPool::submit(std::function<void()> task) -> std::future<void> {
   auto packagedTask = std::make_shared<std::packaged_task<void()>>(task);
   std::future<void> result = packagedTask->get_future();
-  int id = rand() % numThreads;
-  this->localQueues[id]->push([packagedTask]() { (*packagedTask)(); });
+  // int id = rand() % numThreads;
+  // this->localQueues[id]->push([packagedTask]() { (*packagedTask)(); });
+  this->localQueues[nextQueue]->push([packagedTask]() { (*packagedTask)(); });
+  nextQueue = (nextQueue + 1) % numThreads; // 轮询效果更好
   return result;
 }
 thread_local std::shared_ptr<ITaskQueue> ThreadLocalPool::localQueue = nullptr;

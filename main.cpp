@@ -6,8 +6,10 @@
 #include "src/ThreadPool/MultplePool.h"
 #include "src/ThreadPool/SimplePool.h"
 #include "src/ThreadPool/ThreadLocalPool.h"
+#include <cstdlib>
 #include <iostream>
 #include <memory>
+#include <unistd.h>
 
 // void printCurrentThreadId() {
 //   // 获取当前线程的 ID
@@ -35,7 +37,7 @@ void performanceTest(IThreadPool &pool, int numTasks) {
 
         [i] {
           // std::cout << "Start: " << i << std::endl;
-          std::this_thread::sleep_for(std::chrono::milliseconds(10));
+          std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 100));
         }));
   }
 
@@ -49,19 +51,34 @@ void performanceTest(IThreadPool &pool, int numTasks) {
             << " seconds.\n";
 }
 
-int main() {
+void test_SimplePool(int numThreads, int numTasks) {
   auto taskQueue1 = std::make_unique<SimpleQueue>();
-  // auto taskQueue2 = std::make_unique<UnSafeQueue>();
-  MultplePool multple_pool(1000, std::move(taskQueue1->clone()));
-  SimplePool simple_pool(1000, std::move(taskQueue1->clone()));
-  int numTasks = 500000;
-  ThreadLocalPool threadlocal_pool(1000, std::move(taskQueue1->clone()));
-  std::cout << "V1: ";
+  SimplePool simple_pool(numThreads, std::move(taskQueue1->clone()));
+  std::cout << "SimplePool: ";
   performanceTest(simple_pool, numTasks);
-  std::cout << "V2: ";
+}
+
+void test_MultplePool(int numThreads, int numTasks) {
+  auto taskQueue1 = std::make_unique<SimpleQueue>();
+  MultplePool multple_pool(numThreads, std::move(taskQueue1->clone()));
+  std::cout << "MultplePool: ";
   performanceTest(multple_pool, numTasks);
-  std::cout << "V3: ";
+}
+
+void test_ThreadLocalPool(int numThreads, int numTasks) {
+  auto taskQueue1 = std::make_unique<SimpleQueue>();
+  ThreadLocalPool threadlocal_pool(1000, std::move(taskQueue1->clone()));
+  std::cout << "ThreadLocalPool: ";
   performanceTest(threadlocal_pool, numTasks);
+}
+
+int main() {
+  int numThreads = 10000;
+  int numTasks = 500000;
+  // test_SimplePool(numThreads, numTasks);
+  // sleep(5);
+  test_MultplePool(numThreads, numTasks);
+  test_ThreadLocalPool(numThreads, numTasks);
 
   return 0;
 }

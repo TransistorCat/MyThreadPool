@@ -21,6 +21,7 @@ private:
   std::unique_ptr<ITaskQueue> globalQueue;
   std::function<void()> stealTask();
   std::mutex queueMutex;
+  size_t nextQueue{0};
   std::condition_variable cv;
   thread_local static std::shared_ptr<ITaskQueue> localQueue;
 };

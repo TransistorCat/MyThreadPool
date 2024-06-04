@@ -19,5 +19,5 @@ private:
   std::queue<std::function<void()>> tasks;
   std::mutex mutex;
   std::condition_variable condition;
-  bool is_stop;
+  bool is_stop = false;
 };
