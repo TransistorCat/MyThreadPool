@@ -1,5 +1,7 @@
 
 #include "src/TaskQueue/ITaskQueue.h"
+#include "src/TaskQueue/NoLockQueue.h"
+#include "src/TaskQueue/SimpleDeque.h"
 #include "src/TaskQueue/SimpleQueue.h"
 // #include "src/ThreadPool/IThreadPool.h"
 #include "src/ThreadPool/IThreadPool.h"
@@ -37,7 +39,7 @@ void performanceTest(IThreadPool &pool, int numTasks) {
 
         [i] {
           // std::cout << "Start: " << i << std::endl;
-          std::this_thread::sleep_for(std::chrono::milliseconds(rand() % 100));
+          std::this_thread::sleep_for(std::chrono::milliseconds(100));
         }));
   }
 
@@ -51,34 +53,36 @@ void performanceTest(IThreadPool &pool, int numTasks) {
             << " seconds.\n";
 }
 
-void test_SimplePool(int numThreads, int numTasks) {
-  auto taskQueue1 = std::make_unique<SimpleQueue>();
-  SimplePool simple_pool(numThreads, std::move(taskQueue1->clone()));
+void test_SimplePool(int numThreads, int numTasks,
+                     std::unique_ptr<ITaskQueue> taskQueue) {
+
+  SimplePool simple_pool(numThreads, std::move(taskQueue->clone()));
   std::cout << "SimplePool: ";
   performanceTest(simple_pool, numTasks);
 }
 
-void test_MultplePool(int numThreads, int numTasks) {
-  auto taskQueue1 = std::make_unique<SimpleQueue>();
-  MultplePool multple_pool(numThreads, std::move(taskQueue1->clone()));
+void test_MultplePool(int numThreads, int numTasks,
+                      std::unique_ptr<ITaskQueue> taskQueue) {
+  MultplePool multple_pool(numThreads, std::move(taskQueue->clone()));
   std::cout << "MultplePool: ";
   performanceTest(multple_pool, numTasks);
 }
-
-void test_ThreadLocalPool(int numThreads, int numTasks) {
-  auto taskQueue1 = std::make_unique<SimpleQueue>();
-  ThreadLocalPool threadlocal_pool(1000, std::move(taskQueue1->clone()));
+void test_ThreadLocalPool(int numThreads, int numTasks,
+                          std::unique_ptr<ITaskQueue> taskQueue) {
+  ThreadLocalPool threadlocal_pool(1000, std::move(taskQueue->clone()));
   std::cout << "ThreadLocalPool: ";
   performanceTest(threadlocal_pool, numTasks);
 }
-
 int main() {
-  int numThreads = 10000;
-  int numTasks = 500000;
-  // test_SimplePool(numThreads, numTasks);
+  int numThreads = 5000;
+  int numTasks = 20000;
+
+  // test_SimplePool(numThreads, numTasks, std::make_unique<SimpleQueue>());
+  // test_SimplePool(numThreads, numTasks, std::make_unique<SimpleDeque>());
   // sleep(5);
-  test_MultplePool(numThreads, numTasks);
-  test_ThreadLocalPool(numThreads, numTasks);
+  // test_MultplePool(numThreads, numTasks, std::make_unique<NoLockQueue>());
+  test_MultplePool(numThreads, numTasks, std::make_unique<SimpleQueue>());
+  // test_ThreadLocalPool(numThreads, numTasks);
 
   return 0;
 }

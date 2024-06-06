@@ -4,7 +4,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(MyThreadPool main.cpp
 src/TaskQueue/SimpleQueue.cpp
+src/TaskQueue/SimpleDeque.cpp
 src/ThreadPool/SimplePool.cpp
+src/TaskQueue/NoLockQueue.cpp
 src/ThreadPool/MultplePool.cpp
 src/ThreadPool/ThreadLocalPool.cpp
 )
